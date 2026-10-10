@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MONKZHOOD — Mint on Robinhood Chain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cantarell:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
+<link rel="stylesheet" href="style.css">
+<script src="config.js"></script>
+
+</head>
+<body>
+
+<header>
+  <div class="wrap hbar">
+    <a class="brand" href="#mint">MONKZHOOD<em>*</em></a>
+    <nav>
+      <a href="#mint">Mint</a>
+      <a href="#how">How it works?</a>
+    </nav>
+    <div class="hspace"></div>
+    <span class="netstat" id="chainPill"><i></i><span id="chainTxt">NOT CONNECTED</span></span>
+    <div class="hactions">
+      <button class="btn walletbtn" id="walletBtn"><span class="wa">Connect</span><span class="wb">Wallet</span></button>
+      <div class="wmenu" id="wmenu" hidden></div>
+    </div>
+  </div>
+</header>
+
+<div class="netbanner" id="netBanner" hidden>
+  <div class="wrap">
+    <span id="netMsg"></span>
+    <button class="btn mini" id="switchBtn" hidden style="background:#fff;color:#B92E07;border-color:#B92E07">Switch</button>
+  </div>
+</div>
+
+<main>
+  <section id="mint">
+    <div class="wrap">
+      <div class="kicker" hidden>
+        <span class="chip" id="statusChip"><i></i><span id="statusTxt">CONNECTING</span></span>
+        <span>ROBINHOOD CHAIN · ID 4663</span>
+      </div>
+      <h1>Mint <em>MONKZHOOD</em></h1>
+      <p class="sub"><b>6,969</b> editions. <b>1 free</b> per wallet while the 5,000 free allotment lasts, then <b>0.000069 ETH</b> each until the plate is full.</p>
+
+      <div class="supply">
+        <span class="now" id="supplyNow">0</span>
+        <span class="max" id="supplyMax">/ 7,777</span>
+        <span class="cap" id="supplyCap">MINTED</span>
+      </div>
+      <div class="bar"><i id="barFill"></i></div>
+      <div class="facts">
+        <div><span>Price</span><b id="fPrice">— ETH</b></div>
+        <div><span>Max / Tx</span><b id="fMaxTx">—</b></div>
+        <div><span>Free Left</span><b id="fFreeLeft">—</b></div>
+        <div><span>Cooldown</span><b id="fCool">—</b></div>
+      </div>
+
+      <div class="card">
+        <div class="mintgrid">
+          <div>
+            <span class="mtag">01 · <b>Free</b> — 1 per wallet</span>
+            <div class="big">0<small>ETH</small></div>
+            <div class="mmeta" id="freeMeta">LIMIT — / WALLET</div>
+            <div class="cool" id="coolLine" hidden>NEXT FREE CLAIM IN <b id="coolT">0:00</b></div>
+            <div class="mpush"></div>
+            <button class="btn wide" id="freeBtn">Claim free mint</button>
+            <div class="reason" id="freeReason"></div>
+          </div>
+          <div>
+            <span class="mtag">02 · Paid mint</span>
+            <div class="stepper">
+              <button class="stepbtn" id="dec" aria-label="Decrease quantity">&minus;</button>
+              <div class="qtybox"><input id="qty" inputmode="numeric" value="1" aria-label="Quantity"></div>
+              <button class="stepbtn" id="inc" aria-label="Increase quantity">+</button>
+              <button class="btn ghost mini maxbtn" id="maxBtn">Max</button>
+            </div>
+            <div class="priceline"><span>Price / token</span><span class="dots"></span><b id="perPrice">— ETH</b></div>
+            <div class="priceline"><span>Total</span><span class="dots"></span><b id="totPrice">— ETH</b></div>
+            <div class="mpush"></div>
+            <button class="btn wide" id="paidBtn">Mint 1</button>
+            <div class="reason" id="paidReason"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gallery" aria-label="Collection artwork">
+    <div class="mtrack" id="mtrack"></div>
+  </div>
+
+  <section id="how">
+    <div class="wrap">
+      <div class="howhead">
+        <span class="howkicker">FOUR STEPS</span>
+        <h2>HOW IT <em>WORKS?</em></h2>
+      </div>
+      <div class="hgrid">
+        <div class="hstep" style="--i:0">
+          <div class="hbadge">01</div>
+          <div class="hicon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="3"/><path d="M2 10h20"/><circle cx="17" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg>
+          </div>
+          <h3>Connect</h3>
+          <p>Connect any injected wallet (<b>MetaMask, Rabby, Coinbase</b>…) on <b>Robinhood Chain — ID 4663</b>. Don't have the network yet? Hit <b>SWITCH</b> in the banner and it's added to your wallet in one click.</p>
+        </div>
+        <div class="hstep" style="--i:1">
+          <div class="hbadge">02</div>
+          <div class="hicon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M7 7l5-5 5 5M7 17l5 5 5-5"/></svg>
+          </div>
+          <h3>Claim free</h3>
+          <p>Every wallet gets <b>1 free mint</b> — no ETH needed, only gas — while the <b>5,000 free</b> allotment lasts. One free mint per block network-wide; wait a few seconds if the button shows a cooldown.</p>
+        </div>
+        <div class="hstep" style="--i:2">
+          <div class="hbadge">03</div>
+          <div class="hicon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5c.5-1 1.5-1.5 2.5-1.5 1.5 0 2.5 1 2.5 2.2S13.5 12 12 12s-2.5.8-2.5 2.1 1.2 2.2 2.5 2.2c1 0 2-.5 2.5-1.5"/></svg>
+          </div>
+          <h3>Paid mint</h3>
+          <p>Mint more at <b>0.000069 ETH</b> per token — up to <b>69 per transaction</b> and <b>69 per wallet</b>. ETH goes straight to the payout address; this page never holds funds.</p>
+        </div>
+        <div class="hstep" style="--i:3">
+          <div class="hbadge">04</div>
+          <div class="hicon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg>
+          </div>
+          <h3>Hold</h3>
+          <p>Minted tokens land in your wallet. Keep them — view any time on the explorer or in your NFT wallet.</p>
+        </div>
+      </div>
+
+      <div class="hnote">
+        <div class="hnote-icon" aria-hidden="true">!</div>
+        <div>
+          <h3>Why did my free mint revert?</h3>
+          <p>Only <b>one free mint per block</b> is allowed. During busy moments someone may claim right before you — the tx reverts and you only lose a little gas. Wait a few seconds and try again when the button stops saying <b>COOLING</b>.</p>
+        </div>
+      </div>
+
+      <div class="hnote hnote-alt">
+        <div class="hnote-icon" aria-hidden="true">?</div>
+        <div>
+<h3>Can I mint 69 NFTs in a single paid transaction?</h3>
+<p>Yes. The paid mint allows up to <b>69 tokens per transaction</b>, as long as you stay within your wallet limit of <b>69 paid mints</b> and there are enough tokens left. Use the quantity stepper or <b>Max</b>, check the total price, then confirm — all 69 will be minted to your wallet in one transaction.</p>
+        </div>
+      </div>
+
+      <div class="hnote hnote-alt">
+        <div class="hnote-icon" aria-hidden="true">?</div>
+        <div>
+          <h3>Why is free mint limited to 1 NFT per block?</h3>
+          <p>Without this limit, bots could mint <b>hundreds or thousands of NFTs in a single block or transaction</b>, clearing the free allotment before real users get a chance. Allowing only <b>one free mint per block</b> keeps the free claim fair for everyone.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap frow">
+    <span>CONTRACT <b id="ftAddr">—</b></span>
+    <button class="icobtn" id="copyAddr" title="Copy contract address" aria-label="Copy address" style="width:28px;height:28px"></button>
+    <a class="fexpl" id="ftExplorer" hidden target="_blank" rel="noopener">EXPLORER</a>
+    <span class="fnote">ALWAYS VERIFY THE CONTRACT BEFORE SIGNING</span>
+  </div>
+</footer>
+
+<div id="toasts"></div>
+<div id="modalHost"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
