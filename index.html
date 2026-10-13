@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MONKZHOOD — Mint on Robinhood Chain</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cantarell:wght@400;700&display=swap" rel="stylesheet">
@@ -20,6 +22,12 @@
     <nav>
       <a href="#mint">Mint</a>
       <a href="#how">How it works?</a>
+      <a href="https://x.com/MonkzHood" target="_blank" rel="noopener" class="soclink" aria-label="X">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.727-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </a>
+      <a href="https://opensea.io/collection/monkzhood" target="_blank" rel="noopener" class="soclink" aria-label="OpenSea">
+        <img src="opensea.png" alt="OpenSea" width="16" height="16">
+      </a>
     </nav>
     <div class="hspace"></div>
     <span class="netstat" id="chainPill"><i></i><span id="chainTxt">NOT CONNECTED</span></span>
@@ -45,7 +53,7 @@
         <span>ROBINHOOD CHAIN · ID 4663</span>
       </div>
       <h1>Mint <em>MONKZHOOD</em></h1>
-      <p class="sub"><b>6,969</b> editions. <b>1 free</b> per wallet while the 5,000 free allotment lasts, then <b>0.000069 ETH</b> each until the plate is full.</p>
+      <p class="sub"><b>6,969</b> editions. <b>1 free</b> per wallet, then <b>0.000069 ETH</b> each until the plate is full. Max <b>69 NFTs</b> per wallet.</p>
 
       <div class="supply">
         <span class="now" id="supplyNow">0</span>
@@ -167,7 +175,10 @@
     <span>CONTRACT <b id="ftAddr">—</b></span>
     <button class="icobtn" id="copyAddr" title="Copy contract address" aria-label="Copy address" style="width:28px;height:28px"></button>
     <a class="fexpl" id="ftExplorer" hidden target="_blank" rel="noopener">EXPLORER</a>
-    <span class="fnote">ALWAYS VERIFY THE CONTRACT BEFORE SIGNING</span>
+    <a class="fexpl" href="https://opensea.io/collection/monkzhood" target="_blank" rel="noopener">
+      <img src="opensea.png" alt="OpenSea" width="14" height="14">
+      OPENSEA
+    </a>
   </div>
 </footer>
 

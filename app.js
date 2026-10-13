@@ -20,28 +20,87 @@ if (!cfg.rpc || typeof cfg.rpc !== 'string') {
 }
 
 const ABI = [
-  {"type":"function","name":"NUM_FREE_MINTS","inputs":[],"outputs":[{"name":"","type":"uint256","internalType":"uint256"}],"stateMutability":"view"},
-  {"type":"function","name":"balanceOf","inputs":[{"name":"owner","type":"address","internalType":"address"}],"outputs":[{"name":"","type":"uint256","internalType":"uint256"}],"stateMutability":"view"},
-  {"type":"function","name":"cost","inputs":[],"outputs":[{"name":"","type":"uint256","internalType":"uint256"}],"stateMutability":"view"},
-  {"type":"function","name":"freeMintCooldown","inputs":[],"outputs":[{"name":"","type":"uint256","internalType":"uint256"}],"stateMutability":"view"},
-  {"type":"function","name":"freeMintSupply","inputs":[],"outputs":[{"name":"","type":"uint256","internalType":"uint256"}],"stateMutability":"view"},
-  {"type":"function","name":"freeMintsPerWallet","inputs":[{"name":"","type":"address","internalType":"address"}],"outputs":[{"name":"","type":"uint256","internalType":"uint256"}],"stateMutability":"view"},
-  {"type":"function","name":"freeNFTAlreadyMinted","inputs":[],"outputs":[{"name":"","type":"uint256","internalType":"uint256"}],"stateMutability":"view"},
-  {"type":"function","name":"lastFreeMintTimestamp","inputs":[],"outputs":[{"name":"","type":"uint256","internalType":"uint256"}],"stateMutability":"view"},
-  {"type":"function","name":"maxFreeMintAmountPerWallet","inputs":[],"outputs":[{"name":"","type":"uint8","internalType":"uint8"}],"stateMutability":"view"},
-  {"type":"function","name":"maxMintAmountPerTx","inputs":[],"outputs":[{"name":"","type":"uint8","internalType":"uint8"}],"stateMutability":"view"},
-  {"type":"function","name":"maxPaidMintAmountPerWallet","inputs":[],"outputs":[{"name":"","type":"uint256","internalType":"uint256"}],"stateMutability":"view"},
-  {"type":"function","name":"maxSupply","inputs":[],"outputs":[{"name":"","type":"uint256","internalType":"uint256"}],"stateMutability":"view"},
-  {"type":"function","name":"mint","inputs":[{"name":"_mintAmount","type":"uint256","internalType":"uint256"}],"outputs":[],"stateMutability":"payable"},
-  {"type":"function","name":"mintMonkzHoodFree","inputs":[],"outputs":[],"stateMutability":"nonpayable"},
-  {"type":"function","name":"ownerOf","inputs":[{"name":"tokenId","type":"uint256","internalType":"uint256"}],"outputs":[{"name":"","type":"address","internalType":"address"}],"stateMutability":"view"},
-  {"type":"function","name":"paidMintSupply","inputs":[],"outputs":[{"name":"","type":"uint256","internalType":"uint256"}],"stateMutability":"view"},
-  {"type":"function","name":"paidMintsPerWallet","inputs":[{"name":"","type":"address","internalType":"address"}],"outputs":[{"name":"","type":"uint256","internalType":"uint256"}],"stateMutability":"view"},
-  {"type":"function","name":"paidNFTAlreadyMinted","inputs":[],"outputs":[{"name":"","type":"uint256","internalType":"uint256"}],"stateMutability":"view"},
-  {"type":"function","name":"paused","inputs":[],"outputs":[{"name":"","type":"bool","internalType":"bool"}],"stateMutability":"view"},
-  {"type":"function","name":"tokenURI","inputs":[{"name":"_tokenId","type":"uint256","internalType":"uint256"}],"outputs":[{"name":"","type":"string","internalType":"string"}],"stateMutability":"view"},
-  {"type":"function","name":"totalSupply","inputs":[],"outputs":[{"name":"result","type":"uint256","internalType":"uint256"}],"stateMutability":"view"},
-  {"type":"event","name":"Transfer","inputs":[{"name":"from","type":"address","indexed":true,"internalType":"address"},{"name":"to","type":"address","indexed":true,"internalType":"address"},{"name":"tokenId","type":"uint256","indexed":true,"internalType":"uint256"}],"anonymous":false}
+  {"inputs":[{"internalType":"string","name":"name_","type":"string"},{"internalType":"string","name":"symbol_","type":"string"},{"components":[{"internalType":"uint256","name":"maxSupply","type":"uint256"},{"internalType":"uint256","name":"paidMintSupply","type":"uint256"},{"internalType":"uint256","name":"numFreeMints","type":"uint256"},{"internalType":"uint256","name":"cost","type":"uint256"},{"internalType":"uint8","name":"maxMintAmountPerTx","type":"uint8"},{"internalType":"uint8","name":"maxFreeMintAmountPerWallet","type":"uint8"},{"internalType":"uint256","name":"maxPaidMintAmountPerWallet","type":"uint256"},{"internalType":"uint256","name":"freeMintCooldown","type":"uint256"},{"internalType":"uint96","name":"royaltyBps","type":"uint96"},{"internalType":"address","name":"royaltyReceiver","type":"address"},{"internalType":"address","name":"payoutReceiver","type":"address"}],"internalType":"struct MonkzHood.Config","name":"cfg","type":"tuple"}],"stateMutability":"nonpayable","type":"constructor"},
+  {"inputs":[],"name":"ApprovalCallerNotOwnerNorApproved","type":"error"},
+  {"inputs":[],"name":"ApprovalQueryForNonexistentToken","type":"error"},
+  {"inputs":[],"name":"BalanceQueryForZeroAddress","type":"error"},
+  {"inputs":[],"name":"MintERC2309QuantityExceedsLimit","type":"error"},
+  {"inputs":[],"name":"MintToZeroAddress","type":"error"},
+  {"inputs":[],"name":"MintZeroQuantity","type":"error"},
+  {"inputs":[],"name":"NotCompatibleWithSpotMints","type":"error"},
+  {"inputs":[],"name":"OwnerQueryForNonexistentToken","type":"error"},
+  {"inputs":[],"name":"OwnershipNotInitializedForExtraData","type":"error"},
+  {"inputs":[],"name":"SequentialMintExceedsLimit","type":"error"},
+  {"inputs":[],"name":"SequentialUpToTooSmall","type":"error"},
+  {"inputs":[],"name":"SpotMintTokenIdTooSmall","type":"error"},
+  {"inputs":[],"name":"TokenAlreadyExists","type":"error"},
+  {"inputs":[],"name":"TokenIdsNotStrictlyAscending","type":"error"},
+  {"inputs":[],"name":"TransferCallerNotOwnerNorApproved","type":"error"},
+  {"inputs":[],"name":"TransferFromIncorrectOwner","type":"error"},
+  {"inputs":[],"name":"TransferToNonERC721ReceiverImplementer","type":"error"},
+  {"inputs":[],"name":"TransferToZeroAddress","type":"error"},
+  {"inputs":[],"name":"URIQueryForNonexistentToken","type":"error"},
+  {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"approved","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Approval","type":"event"},
+  {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"operator","type":"address"},{"indexed":false,"internalType":"bool","name":"approved","type":"bool"}],"name":"ApprovalForAll","type":"event"},
+  {"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"fromTokenId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"toTokenId","type":"uint256"},{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"}],"name":"ConsecutiveTransfer","type":"event"},
+  {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},
+  {"anonymous":false,"inputs":[{"indexed":false,"internalType":"string","name":"prefix","type":"string"},{"indexed":false,"internalType":"string","name":"suffix","type":"string"}],"name":"TokenURIFrozen","type":"event"},
+  {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Transfer","type":"event"},
+  {"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"oldValidator","type":"address"},{"indexed":false,"internalType":"address","name":"newValidator","type":"address"}],"name":"TransferValidatorUpdated","type":"event"},
+  {"inputs":[],"name":"NUM_FREE_MINTS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"approve","outputs":[],"stateMutability":"payable","type":"function"},
+  {"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"cost","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"internalType":"uint16","name":"_mintAmount","type":"uint16"},{"internalType":"address","name":"_receiver","type":"address"}],"name":"creatorReserve","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[],"name":"freeMintCooldown","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"freeMintsPerWallet","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"freeNFTAlreadyMinted","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"freezeTokenURI","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getApproved","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"getTransferValidationFunction","outputs":[{"internalType":"bytes4","name":"functionSignature","type":"bytes4"},{"internalType":"bool","name":"isViewFunction","type":"bool"}],"stateMutability":"pure","type":"function"},
+  {"inputs":[],"name":"getTransferValidator","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"operator","type":"address"}],"name":"isApprovedForAll","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"lastFreeMintTimestamp","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"maxFreeMintAmountPerWallet","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"maxMintAmountPerTx","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"maxPaidMintAmountPerWallet","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"maxSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"internalType":"uint256","name":"_mintAmount","type":"uint256"}],"name":"mint","outputs":[],"stateMutability":"payable","type":"function"},
+  {"inputs":[],"name":"mintFree","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ownerOf","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"paidMintSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"paidMintsPerWallet","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"paidNFTAlreadyMinted","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"paused","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"payoutReceiver","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[],"name":"royaltyBps","outputs":[{"internalType":"uint96","name":"","type":"uint96"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"uint256","name":"salePrice","type":"uint256"}],"name":"royaltyInfo","outputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"royaltyReceiver","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"payable","type":"function"},
+  {"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"bytes","name":"_data","type":"bytes"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"payable","type":"function"},
+  {"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"bool","name":"approved","type":"bool"}],"name":"setApprovalForAll","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"internalType":"uint256","name":"_newCost","type":"uint256"}],"name":"setCost","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"internalType":"uint8","name":"_maxFreeMintAmountPerWallet","type":"uint8"}],"name":"setMaxFreeMintAmountPerWallet","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"internalType":"uint256","name":"_numFreeMints","type":"uint256"}],"name":"setNumFreeMints","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"internalType":"uint256","name":"_paidMintSupply","type":"uint256"}],"name":"setPaidMintSupply","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"internalType":"bool","name":"_state","type":"bool"}],"name":"setPaused","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"internalType":"address","name":"_newPayoutReceiver","type":"address"}],"name":"setPayoutReceiver","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"internalType":"address","name":"_receiver","type":"address"},{"internalType":"uint96","name":"_bps","type":"uint96"}],"name":"setRoyalty","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"internalType":"address","name":"_validator","type":"address"}],"name":"setTransferValidator","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"internalType":"string","name":"_uriPrefix","type":"string"}],"name":"setUriPrefix","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"internalType":"string","name":"_uriSuffix","type":"string"}],"name":"setUriSuffix","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"internalType":"bytes4","name":"interfaceId","type":"bytes4"}],"name":"supportsInterface","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"internalType":"uint256","name":"_tokenId","type":"uint256"}],"name":"tokenURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"result","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"transferFrom","outputs":[],"stateMutability":"payable","type":"function"},
+  {"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[],"name":"transferValidator","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"uriFrozen","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"}
 ];
 
 /* ------------------------- helpers ------------------------- */
@@ -179,7 +238,7 @@ async function refreshStats(){
     paused: contractRead.paused(), maxTx: contractRead.maxMintAmountPerTx(),
     maxFreeWallet: contractRead.maxFreeMintAmountPerWallet(), maxPaidWallet: contractRead.maxPaidMintAmountPerWallet(),
     freeMinted: contractRead.freeNFTAlreadyMinted(), paidMinted: contractRead.paidNFTAlreadyMinted(),
-    numFree: contractRead.NUM_FREE_MINTS(), freeSupply: contractRead.freeMintSupply(), paidSupply: contractRead.paidMintSupply(),
+    numFree: contractRead.NUM_FREE_MINTS(), paidSupply: contractRead.paidMintSupply(),
     cooldown: contractRead.freeMintCooldown(), lastFree: contractRead.lastFreeMintTimestamp()
   };
   let okCount = 0;
@@ -555,11 +614,16 @@ async function sendTx(promiseFactory, { pendingTitle = 'CONFIRM IN WALLET', errM
   }
 }
 
-/* Friendly English for the free-mint revert reasons the contract emits. */
+/* Friendly English for the revert reasons this contract emits. */
 const FREE_ERR_MAP = m => {
-  if (/wait 1 second|wait 3 seconds|cooldown/i.test(m)) return 'One free mint per block — someone minted just before you. Wait a few seconds and try again.';
-  if (/no more free mints/i.test(m)) return 'The free allotment (5,000) is used up.';
-  if (/max free mint per wallet/i.test(m)) return 'Your wallet has already claimed its free mint.';
+  if (/cooldown/i.test(m)) return 'One free mint per block — wait a few seconds and try again.';
+  if (/no free left/i.test(m)) return 'The free allotment is used up.';
+  if (/max free\/wallet/i.test(m)) return 'Your wallet has already claimed its free mint.';
+  if (/paid out/i.test(m)) return 'The paid allotment is sold out.';
+  if (/max paid\/wallet/i.test(m)) return 'Your wallet has reached its paid mint limit.';
+  if (/max\/tx/i.test(m)) return 'That quantity is above the per-transaction limit.';
+  if (/bad value/i.test(m)) return 'Wrong ETH amount sent — refresh the price and try again.';
+  if (/amount=0/i.test(m)) return 'Choose a quantity of 1 or more.';
   if (/paused/i.test(m)) return 'The contract is paused right now.';
   if (/no more/i.test(m)) return 'The collection is sold out.';
   if (/insufficient funds|missing revert data|exceeds balance/i.test(m)) return 'Not enough ETH in your wallet for gas (and mint cost). Top up and try again.';
@@ -585,7 +649,7 @@ async function doFreeMint(){
   const blocker = freeBlockReason();
   if (blocker) { toast('info','Hold on', blocker); return; }
   S.busyFree = true; el('freeBtn').classList.add('busy'); el('freeBtn').textContent = 'CLAIMING\u2026';
-  const rc = await sendTx(() => signerContract().mintMonkzHoodFree(), { pendingTitle: 'FREE MINT', errMap: FREE_ERR_MAP, ethNeeded: 1000000000000000n });
+  const rc = await sendTx(() => signerContract().mintFree(), { pendingTitle: 'FREE MINT', errMap: FREE_ERR_MAP, ethNeeded: 1000000000000000n });
   S.busyFree = false; el('freeBtn').classList.remove('busy');
   if (!rc) { refreshStats(); return; }
   if (S.data) S.cooldownOverride = Date.now() + Number(S.data.cooldown) * 1000;

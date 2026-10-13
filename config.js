@@ -3,7 +3,7 @@
    app.js reads window.MINT_CONFIG — do not put secrets/keys here.
    ===================================================================== */
 window.MINT_CONFIG = {
-  address: '0xeF69FcaaC075Ca586F2C8dD1492a76eFF41A49a9',
+  address: '0xbfB1665C9911211a811743DA9673ddd7bD24ca07',
   chainId: 4663,
   chainName: 'ROBINHOOD CHAIN',
   explorer: 'https://robinhoodchain.blockscout.com',
