@@ -169,7 +169,7 @@ function initGallery(){
 let readProvider = null, contractRead = null;
 let signer = null, user = null, walletChainId = null;
 const S = { data:null, fetchedAt:0, cooldownRemain:0, cooldownOverride:0, deployed:null,
-            qty:1, busyFree:false, busyPaid:false };
+            qty:1, busyFree:false, busyPaid:false, gasPaid:null, gasFree:null };
 let readErrorShown = false, liveDeb = null;
 
 function setReadProvider(provider){
@@ -267,6 +267,7 @@ async function refreshStats(){
   const last = Number(d.lastFree ?? 0), cd = Number(d.cooldown ?? 0);
   S.cooldownRemain = Math.max(0, last + cd - (d.blockTs ?? Math.floor(Date.now()/1000)));
   renderAll();
+  refreshGasQuotes();
 }
 
 function cooldownRemain(){
@@ -356,6 +357,7 @@ function renderConsole(){
   const freeBtn = el('freeBtn'), paidBtn = el('paidBtn');
   if (!contractRead) {
     el('perPrice').textContent = '— ETH'; el('totPrice').textContent = '— ETH';
+    el('paidGas').textContent = '— ETH'; el('freeGas').textContent = '— ETH';
     el('freeReason').textContent = 'CONTRACT NOT CONFIGURED';
     el('paidReason').textContent = 'CONTRACT NOT CONFIGURED';
     freeBtn.textContent = 'CLAIM FREE MINT'; paidBtn.textContent = 'MINT 1';
@@ -376,6 +378,10 @@ function renderConsole(){
   el('qty').value = S.qty;
   const total = d.cost * BigInt(Math.max(1, S.qty));
   el('totPrice').textContent = fmtE(total) + ' ETH';
+  const paidG = fmtGas(S.gasPaid && S.gasPaid.qty === S.qty ? S.gasPaid : null);
+  const freeG = fmtGas(S.gasFree);
+  el('paidGas').textContent = paidG.text; el('paidGas').title = paidG.title;
+  el('freeGas').textContent = freeG.text; el('freeGas').title = freeG.title;
   if (!S.busyPaid) paidBtn.textContent = `MINT ${S.qty} — ${fmtE(total)} ETH`;
   let pr = '';
   if (d.paused) pr = 'CONTRACT IS PAUSED';
@@ -385,8 +391,8 @@ function renderConsole(){
        : capWallet <= 0 ? 'YOUR PAID ALLOWANCE IS USED' : 'MINTING UNAVAILABLE';
   } else if (maxQ < Number(d.maxTx)) pr = `LIMITED TO ${fmtN(maxQ)} RIGHT NOW`;
   if (!pr && user && d.balUser != null) {
-    const need = total + 500000000000000n;
-    if (d.balUser < need) pr = `NOT ENOUGH ETH — NEED ~${fmtE(need)} ETH (MINT + GAS)`;
+    const need = total + cachedGasCost();
+    if (d.balUser < need) pr = `NOT ENOUGH ETH — NEED ~${Number(fmtE(need)).toFixed(6)} ETH (MINT + RPC GAS)`;
   }
   el('paidReason').textContent = pr;
 }
@@ -565,6 +571,68 @@ function requireReady(){
   return true;
 }
 
+/* ------------------------- gas estimation -------------------------
+   Real eth_estimateGas, priced at the node's gas price but never above
+   MAX_GAS_PRICE_WEI (0.03 gwei). No flat ETH padding anywhere.       */
+const MAX_GAS_PRICE_WEI = 30000000n;   // 0.03 gwei
+const GAS_LIMIT_FALLBACK = 300000n;    // used only when estimation fails
+const GAS_LIMIT_BUFFER_PCT = 20n;      // small head-room on the estimate
+const PREVIEW_FROM = '0x000000000000000000000000000000000000dEaD'; // when no wallet
+const MINT_IFACE = new ethers.Interface(ABI);
+
+function paidMintTx(qty, value){
+  return { to: cfg.address, data: MINT_IFACE.encodeFunctionData('mint', [qty]), value };
+}
+function freeMintTx(){
+  return { to: cfg.address, data: MINT_IFACE.encodeFunctionData('mintFree') };
+}
+
+async function quoteGas(txReq){
+  const q = { price: MAX_GAS_PRICE_WEI, limit: GAS_LIMIT_FALLBACK, cost: 0n };
+  if (readProvider) {
+    try {
+      const fee = await readProvider.getFeeData();
+      const p = fee.gasPrice ?? fee.maxFeePerGas ?? 0n;
+      if (p > 0n && p < q.price) q.price = p;
+    } catch {}
+    try {
+      const req = Object.assign({ from: user || PREVIEW_FROM }, txReq);
+      const est = await readProvider.estimateGas(req);
+      if (est > 0n) q.limit = (est * (100n + GAS_LIMIT_BUFFER_PCT)) / 100n;
+    } catch {}
+  }
+  q.cost = q.price * q.limit;
+  return q;
+}
+
+function cachedGasCost(){
+  if (S.gasPaid && S.gasPaid.qty === S.qty) return S.gasPaid.cost;
+  return MAX_GAS_PRICE_WEI * GAS_LIMIT_FALLBACK;
+}
+
+async function refreshGasQuotes(){
+  if (!readProvider || !S.data || !cfg.address) return;
+  const seq = (refreshGasQuotes.__seq = (refreshGasQuotes.__seq || 0) + 1);
+  const qty = Math.max(1, S.qty);
+  try {
+    const [paid, free] = await Promise.all([
+      quoteGas(paidMintTx(qty, S.data.cost * BigInt(qty))),
+      quoteGas(freeMintTx())
+    ]);
+    if (seq !== refreshGasQuotes.__seq) return;
+    S.gasPaid = { qty, price: paid.price, limit: paid.limit, cost: paid.cost };
+    S.gasFree = { price: free.price, limit: free.limit, cost: free.cost };
+    renderConsole();
+  } catch {}
+}
+
+function fmtGas(q){
+  if (!q || q.cost == null) return { text: '— ETH', title: '' };
+  const eth = Number(fmtE(q.cost)).toFixed(9);
+  const gwei = Number(q.price) / 1e9;
+  return { text: eth + ' ETH', title: `${fmtN(q.limit)} gas @ ${gwei} gwei (capped 0.03)` };
+}
+
 /* ------------------------- transactions ------------------------- */
 async function sendTx(promiseFactory, { pendingTitle = 'CONFIRM IN WALLET', errMap = null, ethNeeded = 0n } = {}){
   if (ethNeeded > 0n && user && readProvider) {
@@ -572,7 +640,7 @@ async function sendTx(promiseFactory, { pendingTitle = 'CONFIRM IN WALLET', errM
       const bal = await readProvider.getBalance(user);
       if (bal < ethNeeded) {
         toast('error','Not enough ETH',
-          `You need at least ${fmtE(ethNeeded)} ETH for this mint (plus a little for gas). Your wallet has ${fmtE(bal)} ETH.`,
+          `You need at least ${fmtE(ethNeeded)} ETH for this mint (price + estimated gas at ≤0.03 gwei). Your wallet has ${fmtE(bal)} ETH.`,
           10000);
         return null;
       }
@@ -649,7 +717,8 @@ async function doFreeMint(){
   const blocker = freeBlockReason();
   if (blocker) { toast('info','Hold on', blocker); return; }
   S.busyFree = true; el('freeBtn').classList.add('busy'); el('freeBtn').textContent = 'CLAIMING\u2026';
-  const rc = await sendTx(() => signerContract().mintFree(), { pendingTitle: 'FREE MINT', errMap: FREE_ERR_MAP, ethNeeded: 1000000000000000n });
+  const gas = await quoteGas(freeMintTx());
+  const rc = await sendTx(() => signerContract().mintFree(), { pendingTitle: 'FREE MINT', errMap: FREE_ERR_MAP, ethNeeded: gas.cost });
   S.busyFree = false; el('freeBtn').classList.remove('busy');
   if (!rc) { refreshStats(); return; }
   if (S.data) S.cooldownOverride = Date.now() + Number(S.data.cooldown) * 1000;
@@ -667,12 +736,12 @@ async function doPaidMint(){
   if (maxQ <= 0) { toast('info','Can\u2019t mint', el('paidReason').textContent || 'No allocation available.'); return; }
   S.qty = Math.min(S.qty, maxQ);
   const qty = S.qty, value = d.cost * BigInt(qty);
-  const gasPad = 500000000000000n;
+  const gas = await quoteGas(paidMintTx(qty, value));
   S.busyPaid = true; el('paidBtn').classList.add('busy'); el('paidBtn').textContent = 'MINTING…';
   const rc = await sendTx(() => signerContract().mint(qty, { value }), {
     pendingTitle: `MINT ${qty} TOKEN${qty>1?'S':''}`,
     errMap: FREE_ERR_MAP,
-    ethNeeded: value + gasPad
+    ethNeeded: value + gas.cost
   });
   S.busyPaid = false; el('paidBtn').classList.remove('busy');
   if (!rc) { refreshStats(); return; }
@@ -707,13 +776,14 @@ function copyText(text, msg){
 }
 el('copyAddr').onclick = () => { if (cfg.address) copyText(cfg.address, 'Contract address copied'); };
 
-el('dec').onclick = () => { S.qty = Math.max(1, S.qty - 1); renderConsole(); };
-el('inc').onclick = () => { S.qty = Math.min(Math.max(1, maxQtyBuyable() || 1), S.qty + 1); renderConsole(); };
-el('maxBtn').onclick = () => { const m = maxQtyBuyable(); if (m >= 1) { S.qty = m; renderConsole(); } };
+el('dec').onclick = () => { S.qty = Math.max(1, S.qty - 1); renderConsole(); refreshGasQuotes(); };
+el('inc').onclick = () => { S.qty = Math.min(Math.max(1, maxQtyBuyable() || 1), S.qty + 1); renderConsole(); refreshGasQuotes(); };
+el('maxBtn').onclick = () => { const m = maxQtyBuyable(); if (m >= 1) { S.qty = m; renderConsole(); refreshGasQuotes(); } };
 el('qty').addEventListener('change', () => {
   const v = parseInt(el('qty').value, 10);
   S.qty = isNaN(v) ? 1 : Math.max(1, Math.min(v, Math.max(1, maxQtyBuyable() || 1)));
   renderConsole();
+  refreshGasQuotes();
 });
 el('qty').addEventListener('keydown', e => { if (e.key === 'Enter') el('qty').blur(); });
 
